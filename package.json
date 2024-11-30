@@ -1,0 +1,15 @@
+{
+  "name": "velvet",
+  "version": "0.0.1",
+  "description": "real simple testing framework",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node src/index.js"
+  },
+  "keywords": [
+    "testing"
+  ],
+  "author": "godtierluck",
+  "license": "ISC"
+}
