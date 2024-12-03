@@ -1,5 +1,5 @@
 # Velvet
-Testing framework based off jest
+Trying to setup a simple testing framework using the least amount of external modules as I can
 
 ## Example
 
@@ -14,6 +14,7 @@ describe('velvet test suite', () => {
 
 ## TODO
 
-- [ ] Fix multiple suites running in sequence
+- [x] Fix multiple suites running in sequence
 - [ ] Setup expect object
   - get .not working
+- [ ] Setup config file
