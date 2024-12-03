@@ -1,17 +1,5 @@
 import * as matchers from './matchers.js';
-
-class TestFailure extends Error {
-    constructor(value, expected, options) {
-        const message = `${value} !== ${expected}`
-        super(message, options)
-    }
-}
-
-class GenericTestFailure extends Error {
-    constructor(message) {
-        super(message, {})
-    }
-}
+import { TestFailure } from './exceptions.js';
 
 class Velvet {
     static GENERIC_TESTS_LABEL = 'generic';

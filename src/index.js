@@ -1,3 +1,10 @@
 import { run } from './velvet.js';
+import loadFiles from './finder.js';
 
-run(['./__tests__/velvet.test.js', './__tests__/velvet-2.test.js']);
+const startTesting = () => {
+    const files = loadFiles();
+    console.log(files)
+    run(files);
+}
+
+startTesting();
