@@ -18,3 +18,6 @@ describe('velvet test suite', () => {
 - [ ] Setup expect object
   - get .not working
 - [ ] Setup config file
+- [x] Setup mock functions
+  - [ ] setup matchers for mock functions
+- [ ] Look into node vm for running test files
