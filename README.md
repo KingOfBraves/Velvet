@@ -30,3 +30,4 @@ mockConsole();
 - [ ] Look into node vm for running test files
 - [ ] Investigate spyOn functionality
 - [ ] Plugin support? (probably not useful but could be cool)
+- [ ] Write docs
