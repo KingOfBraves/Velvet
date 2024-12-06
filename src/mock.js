@@ -1,7 +1,3 @@
-class Mock {
-
-}
-
 export class VelvetMocker {
     constructor() {
         this.implementation = () => console.log('testetsetest');
@@ -12,7 +8,6 @@ export class VelvetMocker {
     _createDefaultMockConfig() {
         return {
             impl: () => {},
-            a: 'hello world'
         }
     }
 
@@ -48,8 +43,6 @@ export class VelvetMocker {
         const mockConstructor = function(...args) {
             const config = mocker._getMockConfig(f);
             const state = mocker._getMockState(f);
-            console.log('state', state)
-            console.log('config', config)
             state.calls.push(args)
             state.lastCall = args;
             state.numberOfCalls = state.numberOfCalls + 1;
@@ -62,7 +55,6 @@ export class VelvetMocker {
         f.getLastCall = () => this._getLastCalledWith(f);
 
         if(newImpl) {
-            console.log('new', newImpl)
             f.setImplementation(newImpl);
         }
         console.log(f)
