@@ -31,7 +31,7 @@ const fromDir = (startPath, filter, callback) => {
  * gets a list of 
  * @returns list of files
  */
-const getListOfTestFiles = ({ testExtension = '.test.js' , _testDirectory = '__tests__' }) => {
+const getListOfTestFiles = ({ testExtension = '.test.js' , _testDirectory = '__tests__' } = {}) => {
     fromDir('./', new RegExp(testExtension), addToContainer);
     return fileContainer;
 }

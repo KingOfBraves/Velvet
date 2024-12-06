@@ -1,6 +1,11 @@
 import { TestFailure, GenericTestFailure } from "./exceptions.js";
 
 export const toEqual = (result, expected) => {
+    if (Array.isArray(expected) && Array.isArray(result) && expected.length === result.length) {
+        if (result.every((e, i) => e === expected[i])) {
+            return true;
+        }
+    }
     if (result === expected) {
         return true;
     }

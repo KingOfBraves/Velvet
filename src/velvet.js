@@ -1,5 +1,6 @@
 import * as matchers from './matchers.js';
 import { TestFailure } from './exceptions.js';
+import { fn } from './mock.js';
 
 class Velvet {
     static GENERIC_TESTS_LABEL = 'generic';
@@ -174,6 +175,10 @@ class Velvet {
     getResults() {
         return this.results;
     }
+
+    fn(impl) {
+        return fn(impl);
+    }
 }
 
 const velvet = new Velvet();
@@ -202,6 +207,7 @@ const mountVelvet = () => {
     global.expect = expect;
     global.it = it;
     global.test = test;
+    global.velvet = velvet;
 }
 
 const loadSuites = async (files) => {
