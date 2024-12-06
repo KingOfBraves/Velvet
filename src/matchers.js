@@ -138,3 +138,28 @@ export const toContain = (result,  expected) => {
     }
     throw new TestFailure(result, expected);
 }
+
+/**************************************
+ * Mock Functions
+ */
+
+export const toHaveBeenCalled = (result) => {
+    if (!numberOfCalls.getNumberOfCalls) {
+        console.log('toHavbeBeenCalled', result)
+        throw new GenericTestFailure('not a mock function');
+    }
+    if (result.getNumberOfCalls() > 0) {
+        return true;
+    }
+    throw new GenericTestFailure(result.getNumberOfCalls());
+}
+
+export const toHaveBeenCalledNTime = (result, expected) => {
+    if (!result?.getNumberOfCalls) {
+        throw new GenericTestFailure('not a mock function');
+    }
+    if (result.getNumberOfCalls() === expected) {
+        return true;
+    }
+    throw new TestFailure(result.getNumberOfCalls(), expected);
+}

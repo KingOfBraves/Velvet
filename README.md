@@ -1,8 +1,9 @@
 # Velvet
-Trying to setup a simple testing framework using the least amount of external modules as I can
+Trying to setup a simple jest like framework using the least amount of external modules as I can. 
 
 ## Example
 
+Jest like syntax
 ```js
 describe('velvet test suite', () => {
     it('simple test', () => {
@@ -10,6 +11,12 @@ describe('velvet test suite', () => {
         expect(() => throw new Error()).toThrow();
     })
 })
+```
+
+Simple mocks
+```js
+const mockConsole = velvet.fn(() => console.log('hello velvet'));
+mockConsole();
 ```
 
 ## TODO
@@ -21,3 +28,5 @@ describe('velvet test suite', () => {
 - [x] Setup mock functions
   - [ ] setup matchers for mock functions
 - [ ] Look into node vm for running test files
+- [ ] Investigate spyOn functionality
+- [ ] Plugin support? (probably not useful but could be cool)

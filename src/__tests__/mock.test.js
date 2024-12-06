@@ -10,11 +10,14 @@ describe('mocking', () => {
         expect(wasCalled3).toEqual(false)
         mockFunction();
         mockFunction2();
+        mockFunction2();
         mockFunction3('test');
         expect(wasCalled2).toEqual(true)
         expect(wasCalled3).toEqual('test')
 
         expect(mockFunction2.getLastCall()).toEqual([]);
         expect(mockFunction3.getLastCall()).toEqual(['test']);
+
+        // expect(mockFunction).toHaveBeenCalled();
     })
 })

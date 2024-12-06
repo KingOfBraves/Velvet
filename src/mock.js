@@ -53,11 +53,11 @@ export class VelvetMocker {
 
         f.setImplementation = (n) => this._setImplementation(f, n);
         f.getLastCall = () => this._getLastCalledWith(f);
+        f.getNumberOfCalls = () => this._getCallCount(f);
 
         if(newImpl) {
             f.setImplementation(newImpl);
         }
-        console.log(f)
         return f;
     }
 
@@ -73,6 +73,11 @@ export class VelvetMocker {
     _getLastCalledWith(f) {
         const state = this._getMockState(f);
         return state.lastCall;
+    }
+
+    _getCallCount(f) {
+        const state = this._getMockState(f);
+        return state.numberOfCalls;
     }
 }
 
