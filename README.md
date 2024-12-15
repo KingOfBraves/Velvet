@@ -27,7 +27,8 @@ mockConsole();
 - [ ] Setup config file
 - [x] Setup mock functions
   - [ ] setup matchers for mock functions
-- [ ] Look into node vm for running test files
+- [x] Look into node vm for running test files
+  - [ ] Put in support for so that `--experimental-vm-modules` isnt mandatory
 - [ ] Investigate spyOn functionality
 - [ ] Plugin support? (probably not useful but could be cool)
 - [ ] Write docs
