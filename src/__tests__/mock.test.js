@@ -18,6 +18,6 @@ describe('mocking', () => {
         expect(mockFunction2.getLastCall()).toEqual([]);
         expect(mockFunction3.getLastCall()).toEqual(['test']);
 
-        // expect(mockFunction).toHaveBeenCalled();
+        expect(mockFunction).toHaveBeenCalled();
     })
 })

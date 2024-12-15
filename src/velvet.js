@@ -1,6 +1,11 @@
 import * as matchers from './matchers.js';
 import { TestFailure } from './exceptions.js';
 import { fn } from './mock.js';
+import fs from 'fs';
+import { readFile } from 'fs/promises';
+import vm from 'vm';
+import path from 'path';
+import Swatch from './swatch.js';
 
 class Velvet {
     static GENERIC_TESTS_LABEL = 'generic';
@@ -16,6 +21,13 @@ class Velvet {
         this.runningSuite = undefined;
         this.rules = this._loadRules();
         this.logger = console;
+        this.features = { vm: false }
+    }
+
+    setFeature(feature, setting) {
+        if (feature in this.features && setting !== undefined) {
+            this.features[feature] = setting;
+        }
     }
 
     setCurrentSuite(suitename = undefined) {
@@ -74,6 +86,7 @@ class Velvet {
      */
     describe(suitename, tests) {
         // create new suite
+        console.log('test')
         this.createNewSuite(suitename);
         try {
             tests();
@@ -179,6 +192,39 @@ class Velvet {
     fn(impl) {
         return fn(impl);
     }
+
+    async _loadSuite(file, ctx) {
+        try {
+            const swatch = new Swatch(file);
+            swatch.createContext(this._createContext());
+            await swatch.load();
+            await swatch.run();
+        } catch (e) {
+            console.log('error loading suites', file, e);
+        }
+    }
+
+    // _createContext() {
+    //     return vm.createContext(this);
+    // }
+
+    _createContext() {
+        return vm.createContext({
+            velvet: {
+                fn: (s) => this.fn(s),
+            },
+            ...this,
+            describe: (s, t) => this.describe(s, t),
+            addRule: (r) => this.addRule(r),
+            expect: (v) => this.expect(v),
+            it: (tn, t) => this.it(tn, t),
+            test: (tn, t) => this.it(tn, t),
+            runTests: (print = true) => {
+                this.run();
+                this.print(print)
+            }
+        })
+    }
 }
 
 const velvet = new Velvet();
@@ -189,16 +235,10 @@ const addRule = (r) => velvet.addRule(r);
 const expect = (v) => velvet.expect(v);
 const it = (tn, t) => velvet.it(tn, t);
 const test = (tn, t) => velvet.it(tn, t);
-const runTests = (print = true) => {
-    velvet.run();
+const runTests = async (print = true) => {
+    await velvet.run();
     velvet.print(print)
 };
-
-describe('velvet 2', () => {
-    it('should run', () => {
-        expect(1).toEqual(1);
-    })
-});
 
 const mountVelvet = () => {
     global.velvet = velvet;
@@ -212,10 +252,11 @@ const mountVelvet = () => {
 
 const loadSuites = async (files) => {
     const promises = [];
+    const ctx = velvet._createContext();
     files.forEach((filename) => {
-        promises.push(import(filename));
+        // promises.push(import(filename));
+        promises.push(velvet._loadSuite(filename, ctx))
     })
-    console.log(promises)
     await Promise.all(promises);
     console.debug('loading finished')
 }
@@ -223,7 +264,7 @@ const loadSuites = async (files) => {
 const run = async (files) => {
     mountVelvet();
     await loadSuites(files);
-    runTests();
+    await runTests();
 }
 
 export { run };

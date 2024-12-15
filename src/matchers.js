@@ -12,6 +12,13 @@ export const toEqual = (result, expected) => {
     throw new TestFailure(result, expected)
 }
 
+const _isError = (err) => {
+    if (Object.prototype.toString.call(err) === '[object Error]') {
+        return true;
+    }
+    return false;
+}
+
 /**
  * expects given function to throw
  * @param {*} func 
@@ -22,7 +29,7 @@ export const toThrow = (func, expectedError) => {
     try {
         func();
     } catch (e) {
-        if (e instanceof Error) {
+        if (_isError(e)) {
             if (!expectedError) {
                 return true;
             }
@@ -30,13 +37,14 @@ export const toThrow = (func, expectedError) => {
                 if (e.message !== expectedError) {
                     throw new TestFailure(e.message, expectedError);
                 }
-            } else if (expectedError instanceof Error) {
-                if (!(e instanceof expectedError) && e.name === expectedError.name) {
+            } else if (_isError(expectedError)) {
+                if (e.name !== expectedError.name) {
                     throw new TestFailure(e.message, expectedError.message);
                 }
             }
             return true
         } else {
+            console.log('somethings wrong')
             throw e;
         }
     }
@@ -144,7 +152,7 @@ export const toContain = (result,  expected) => {
  */
 
 export const toHaveBeenCalled = (result) => {
-    if (!numberOfCalls.getNumberOfCalls) {
+    if (!result.getNumberOfCalls) {
         console.log('toHavbeBeenCalled', result)
         throw new GenericTestFailure('not a mock function');
     }
