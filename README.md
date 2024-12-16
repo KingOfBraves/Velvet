@@ -33,3 +33,4 @@ mockConsole();
 - [ ] Investigate spyOn functionality
 - [ ] Plugin support? (probably not useful but could be cool)
 - [ ] Write docs
+- [ ] Increment successes and failures in velvet class

@@ -259,6 +259,10 @@ const run = async (files) => {
     // mountVelvet();
     await loadSuites(files);
     await runTests();
+    console.log(velvet)
+    if (velvet.failures > 0) {
+        process.exit(1);
+    }
 }
 
 export { run };
