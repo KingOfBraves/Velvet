@@ -11,7 +11,7 @@ const addToContainer = (newFile) => {
 
 const fromDir = (startPath, filter, callback) => {
     if (!fs.existsSync(startPath)) {
-        console.log('invalid directory', startPath);
+        console.error('invalid directory', startPath);
         return;
     }
 

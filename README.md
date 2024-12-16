@@ -29,6 +29,7 @@ mockConsole();
   - [ ] setup matchers for mock functions
 - [x] Look into node vm for running test files
   - [ ] Put in support for so that `--experimental-vm-modules` isnt mandatory
+  - [ ] Fix swatch linker to handle node modules
 - [ ] Investigate spyOn functionality
 - [ ] Plugin support? (probably not useful but could be cool)
 - [ ] Write docs

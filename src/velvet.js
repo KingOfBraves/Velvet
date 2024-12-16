@@ -6,6 +6,7 @@ import { readFile } from 'fs/promises';
 import vm from 'vm';
 import path from 'path';
 import Swatch from './swatch.js';
+import { paint, resultPrinter } from './utils.js';
 
 class Velvet {
     static GENERIC_TESTS_LABEL = 'generic';
@@ -22,6 +23,9 @@ class Velvet {
         this.rules = this._loadRules();
         this.logger = console;
         this.features = { vm: false }
+        this.printers = {
+            table: resultPrinter
+        }
     }
 
     setFeature(feature, setting) {
@@ -36,7 +40,7 @@ class Velvet {
 
     createNewSuite(suitename) {
         this.setCurrentSuite(suitename);
-        this.results[suitename] = { successess: 0, failures: 0};
+        this.results[suitename] = { name: suitename, successes: 0, failures: 0};
     }
 
     _setConfig() {
@@ -86,7 +90,6 @@ class Velvet {
      */
     describe(suitename, tests) {
         // create new suite
-        console.log('test')
         this.createNewSuite(suitename);
         try {
             tests();
@@ -123,7 +126,7 @@ class Velvet {
         try {
             this.before();
             test()
-            this.results[suitename].successess = this.results[suitename].successess + 1
+            this.results[suitename].successes = this.results[suitename].successes + 1
         } catch (e) {
             const name = suitename ? suitename : Velvet.GENERIC_TESTS_LABEL;
             if (!this.failureReasons[name]) {
@@ -149,29 +152,20 @@ class Velvet {
         });
     };
 
-    print(printStack = false) {
-        this.logger.log(this.failureReasons)
-        this.logger.log(`Successess: ${this.successess}, Failures: ${this.failures}`);
-        for (const suitename in this.results) {
-            this.logger.log(suitename);
-            this.logger.log('    ', 'successess:', this.results[suitename].successess)
-            this.logger.log('    ', 'failures:', this.results[suitename].failures)
+    setPrinter(printer, type) {
+        if (!type || type === 'table') {
+            this.printers.table = printer;
         }
-        for (const suitename in this.failureReasons) {
-            if (this.failureReasons[suitename].length > 0) {
-                this.logger.log(suitename);
-                this.failureReasons[suitename].forEach(failure => {
-                    this.logger.log('    ', `${failure.testname}:`, failure.reason);
-                    if (printStack) {
-                        this.logger.log('   ', failure.error)
-                    }
-                })
-            }
+    }
+
+    print(printStack = false) {
+        if (typeof this.printers.table === 'function') {
+            return console.log(this.printers.table(this.results, this.successes, this.failures))
         }
     }
 
     reset() {
-        this.successess = 0;
+        this.successes = 0;
         this.failures = 0
         this.failureReasons = {};
         this.failureReasons[Velvet.GENERIC_TESTS_LABEL] = [];
@@ -200,7 +194,7 @@ class Velvet {
             await swatch.load();
             await swatch.run();
         } catch (e) {
-            console.log('error loading suites', file, e);
+            console.error('error loading suites', file, e);
         }
     }
 
@@ -262,7 +256,7 @@ const loadSuites = async (files) => {
 }
 
 const run = async (files) => {
-    mountVelvet();
+    // mountVelvet();
     await loadSuites(files);
     await runTests();
 }

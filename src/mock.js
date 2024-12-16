@@ -1,6 +1,6 @@
 export class VelvetMocker {
     constructor() {
-        this.implementation = () => console.log('testetsetest');
+        this.implementation = () => console.log();
         this._mockStates = new WeakMap();
         this._mockConfigs = new WeakMap();
     }

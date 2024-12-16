@@ -1,4 +1,5 @@
-import Swatch from "../swatch";
+import Swatch from "../swatch.js";
+import path from 'path';
 
 describe('Swatch', () => {
     it('sets a context' , () => {

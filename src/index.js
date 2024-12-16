@@ -3,7 +3,7 @@ import loadFiles from './finder.js';
 
 const startTesting = () => {
     const files = loadFiles();
-    console.log(files)
+    console.debug('Test files: ', files)
     run(files);
 }
 
