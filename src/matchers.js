@@ -147,13 +147,22 @@ export const toContain = (result,  expected) => {
     throw new TestFailure(result, expected);
 }
 
+export const toHaveLength = (result, expected) => {
+    if (!Array.isArray(result)) {
+        throw new GenericTestFailure('result is not iterable');
+    }
+    if (result.length == expected) {
+        return true;
+    }
+    throw new TestFailure(result.length, expected);
+}
+
 /**************************************
  * Mock Functions
  */
 
 export const toHaveBeenCalled = (result) => {
     if (!result.getNumberOfCalls) {
-        console.log('toHavbeBeenCalled', result)
         throw new GenericTestFailure('not a mock function');
     }
     if (result.getNumberOfCalls() > 0) {

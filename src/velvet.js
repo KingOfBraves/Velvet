@@ -127,6 +127,7 @@ class Velvet {
             this.before();
             test()
             this.results[suitename].successes = this.results[suitename].successes + 1
+            this.successes = this.successes + 1;
         } catch (e) {
             const name = suitename ? suitename : Velvet.GENERIC_TESTS_LABEL;
             if (!this.failureReasons[name]) {
@@ -134,6 +135,7 @@ class Velvet {
             }
             this.failureReasons[name].push({ testname, reason: e.message, error: e})
             this.results[suitename].failures = this.results[suitename].failures + 1
+            this.failures = this.failures + 1;
         }
     }
 
@@ -160,6 +162,7 @@ class Velvet {
 
     print(printStack = false) {
         if (typeof this.printers.table === 'function') {
+            console.log(this.failureReasons)
             return console.log(this.printers.table(this.results, this.successes, this.failures))
         }
     }
@@ -259,7 +262,6 @@ const run = async (files) => {
     // mountVelvet();
     await loadSuites(files);
     await runTests();
-    console.log(velvet)
     if (velvet.failures > 0) {
         process.exit(1);
     }

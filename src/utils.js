@@ -14,45 +14,104 @@ const colours = {
 }
 
 export const paint = (text, colour) => {
+    if (!colour) {
+        return text;
+    }
     return ESC + colours[colour] + text + ESC_FINISH;
 }
 
-const buildRow = (row, columns, border, lengthContainer) => {
+const buildRow = (row, columns, border, lengthContainer, options = defaultTableOptions()) => {
     let rowContainer = [];
     
     columns.forEach(c => {
-        const length = row[c].toString().length;
-        const diff = lengthContainer[c] - length;
-        const colour = row.failures === 0 ? 'green' : 'red';
-        rowContainer.push(`${paint(row[c], colour)}${' '.repeat(diff)}`);
+        const length = row[c.id].toString().length;
+        const diff = lengthContainer[c.id] - length;
+        const colour = options.fontColour(row, options);
+        if (c.justification === 'right') {
+            rowContainer.push(`${' '.repeat(diff)}${paint(row[c.id], colour)}`);
+        } else {
+            rowContainer.push(`${paint(row[c.id], colour)}${' '.repeat(diff)}`);
+        }
     })
     return border + ' ' + rowContainer.join(` ${border} `) + ' ' + border;
 }
 
-const objectMap = (o, cb) => {
+const buildHeaders = (columns, border, lengthContainer, options = defaultTableOptions()) => {
+    let rowBuilder = [];
+    columns.forEach(c => {
+        console.log(c)
+        const length = c.name.toString().length;
+        const diff = lengthContainer[c.id] - length;
+        rowBuilder.push(`${paint(c.name, options.fontColour({}, options))}${' '.repeat(diff)}`);
+    })
+    return border + ' ' + rowBuilder.join(` ${border} `) + ' ' + border;
+}
+
+export const objectMap = (o, cb) => {
     const result = [];
-    for (const [_, entry] of Object.entries(o)) {
-        result.push(cb(entry));
+    for (const [key, entry] of Object.entries(o)) {
+        result.push(cb(key, entry));
     }
     return result;
 }
 
-export const resultPrinter = (results, successes, failures) => {
-    const border = paint('-', 'grey');
-    const vertical = paint('|', 'grey');
-    const lengthContainer = {}
-    const columns = ['name', 'successes', 'failures'];
-    let rowContainer = [];
+/*
+ * column = {
+ *   name: '',
+ *   id: '',
+ *   justification: 'left',
+ *  }
+ *  
+ *  data is either object of objects or []
+ *  data = {
+ *    mocking: { column1: '' }
+ *   }
+*/
+
+const defaultTableOptions = () => {
+    return {
+        borderColour: 'grey',
+        fontColour: (row, options) => 'green',
+        vertical: '|',
+        horizontal: '-',
+        showHeaders: true,
+    }
+}
+
+export const textTable = (columns, data, options = {}) => {
+    let properData = data;
+    let properOptions = { ...defaultTableOptions(), ...options };
+    if (!Array.isArray(data)) {
+        properData = objectMap(data, ((k, e) => ({ _oName: k, ...e })));
+    }
+
+    const vertical = paint(properOptions.vertical, properOptions.borderColour);
+    const horizontal = paint(properOptions.horizontal, properOptions.borderColour);
+
+    const lengthContainer = {};
     let totalLength = 0;
     columns.forEach((c) => {
-        lengthContainer[c] = Math.max(...[c.length, ...(objectMap(results, r => r[c].toString().length))]);
-        totalLength += lengthContainer[c];
-    })
-    console.log(lengthContainer)
-    const edges = border.repeat(totalLength + (columns.length * 3) + 1);
-    rowContainer.push(edges);
-    rowContainer = rowContainer.concat(objectMap(results, r => buildRow(r, columns, vertical, lengthContainer)))
+        lengthContainer[c.id] = Math.max(...[c.id.length, ...properData.map((r) => r[c.id].toString().length)]);
+        totalLength += lengthContainer[c.id];
+    });
 
-    rowContainer.push(edges);
+    const edge = horizontal.repeat(totalLength + (columns.length * 3) + 1);
+    const rowContainer = [edge];
+
+    if (properOptions.showHeaders) {
+        rowContainer.push(buildHeaders(columns, vertical, lengthContainer, properOptions));
+        rowContainer.push(edge);
+    }
+
+    properData.forEach((r) => {
+        rowContainer.push(buildRow(r, columns, vertical, lengthContainer, properOptions));
+    })
+    rowContainer.push(edge);
+
     return rowContainer.join('\n');
+}
+
+export const resultPrinter = (results, successes, failures) => {
+    const columns = [{ name: 'test', id: 'name' }, { name: 'passed', id: 'successes', justification: 'right' }, { name: 'failed', id: 'failures', justification: 'right' }]
+    return textTable(columns, results, { fontColour: (row, options) => row.failures > 0 ? 'red' : 'green' });
 }
