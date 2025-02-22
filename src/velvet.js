@@ -219,7 +219,8 @@ class Velvet {
             runTests: (print = true) => {
                 this.run();
                 this.print(print)
-            }
+            },
+            console: console
         })
     }
 }

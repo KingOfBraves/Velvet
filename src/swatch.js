@@ -5,9 +5,14 @@ import vm from 'vm';
 class Swatch {
     constructor(file) {
         this.file = file;
+        this.resolvedFilename = file;
         this.content = '';
         this.context = {};
         this.imports = new Map();
+        if (file) {
+            const baseName = path.basename(process.cwd());
+            this.resolvedFilename = path.resolve(process.cwd() + '/' + baseName, file);
+        }
     }
 
     async load() {
@@ -19,9 +24,14 @@ class Swatch {
     async _linker(specifier, referencingModule) {
         if (this.imports.has(specifier))
             return this.imports.get(specifier);
-        const directory = path.dirname(this.file);
-        const resolvedFilename = path.join(directory, specifier).replace('\\', '/');
+        let resolvedFilename = path.resolve(path.dirname(this.resolvedFilename), specifier)
         let mod;
+
+        // filename needs to be prefixed on windows
+        if (process.platform === 'win32') {
+            resolvedFilename = 'file://' + resolvedFilename;
+        }
+
         try {
             mod = await import(resolvedFilename);
         } catch (e) {
@@ -41,8 +51,9 @@ class Swatch {
     }
 
     async _readFile(file) {
-        console.debug('reading file', file)
-        const data = await readFile(path.resolve(process.cwd() + '/velvet', file))
+        const baseName = path.basename(process.cwd());
+        console.debug('reading file', file, path.resolve(process.cwd() + '/' + baseName, file))
+        const data = await readFile(path.resolve(process.cwd() + '/' + baseName, file))
         this.content = '(async function() {' + data.toString() + '})();'
         this.module = new vm.SourceTextModule(data.toString(), { context: this.context });
         await this.module.link(this._linker.bind(this));

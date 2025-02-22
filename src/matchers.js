@@ -69,12 +69,16 @@ export const toBeTruthy = (result) => {
     throw new TestFailure(result);
 }
 
+export const toBeTrue = (result) => toBeTruthy(result);
+
 export const toBeFalsy = (result) => {
     if (!result) {
         return true;
     }
     throw new TestFailure(result);
 }
+
+export const toBeFalse = (result) => toBeFalsy(result);
 
 export const toBeNull = (result) => {
     if (result === null) {

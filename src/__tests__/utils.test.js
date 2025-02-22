@@ -33,6 +33,6 @@ describe('text table', () => {
         };
         const result = objectMap(mockObject, mockMapFunc);
         expect(mockMapFunc).toHaveBeenCalledNTime(3);
-        expect(result).toHaveLength(3)
+        expect(result).toHaveLength(3);
     })
 })
